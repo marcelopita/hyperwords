@@ -10,7 +10,6 @@ import pandas as pd
 import sys
 from _functools import partial
 
-
 def printProgressBar (iteration, total, prefix = '', suffix = '',
                       decimals = 1, length = 50, fill = '█'):
     """
@@ -156,7 +155,6 @@ def main(argv = None):
     
     # Save hyperwords to disk
     hyperwords.to_csv(hyperwords_filename)
-    
-    
+        
 if __name__ == '__main__':
     main()
