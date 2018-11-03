@@ -2,13 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import numpy as np
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 import pickle
 
-def printProgressBar (iteration, total, prefix = '', suffix = '',
-                      decimals = 1, length = 50, fill = '█'):
+def printProgressBar(iteration, total, prefix = '', suffix = '',
+                     decimals = 1, length = 50, fill = '█'):
     """
     Call in a loop to create terminal progress bar
     @params:
@@ -27,7 +26,6 @@ def printProgressBar (iteration, total, prefix = '', suffix = '',
     # Print New Line on Complete
     if iteration == total: 
         print()
-
 
 def main(argv = None):
     if argv is None:
@@ -83,7 +81,6 @@ def main(argv = None):
     print("Saving vocabulary mapping")
     with open(argv[4], 'wb') as f:
         pickle.dump(vocab_map, f, protocol=pickle.HIGHEST_PROTOCOL)
-
 
 if __name__ == '__main__':
     main()
