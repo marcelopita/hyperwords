@@ -9,7 +9,6 @@ import numpy as np
 import pandas as pd
 import sys
 from _functools import partial
-from gensim.test.simspeed import sim
 
 def printProgressBar (iteration, total, prefix = '', suffix = '',
                       decimals = 1, length = 50, fill = '█'):
