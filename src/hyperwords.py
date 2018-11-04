@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import sys
 from _functools import partial
+from gensim.test.simspeed import sim
 
 def printProgressBar (iteration, total, prefix = '', suffix = '',
                       decimals = 1, length = 50, fill = '█'):
@@ -95,9 +96,9 @@ def optimize_alpha(H_Y, bow_docs, vocab, cos_sims, dataset_classes):
 def main(argv = None):
     if argv is None:
         argv = sys.argv
-
-    # Load word vectors        
-    w2v_model = KeyedVectors.load_word2vec_format(argv[1], binary=False)
+    
+    # Load word vectors    
+    w2v_model = KeyedVectors.load_word2vec_format(argv[1], binary=argv[1].endswith(".bin"))
     
     # Hyperwords file name
     hyperwords_filename = argv[2]
@@ -119,6 +120,9 @@ def main(argv = None):
     hyperwords = pd.DataFrame(index=vocab, columns=vocab)
     hyperwords = hyperwords.fillna(0.0)
     
+    # Number of unknown words
+    num_unknown_words = 0
+    
     # Calculation of prior H_Y and BOW, when alpha is dynamic
     H_Y = None
     bow_docs = None
@@ -139,7 +143,12 @@ def main(argv = None):
         # Calculate similarities with other word vectors
         cos_sims = []
         for j in range(vocab_size):
-            cos_sims.append(w2v_model.similarity(vocab[i], vocab[j]))
+            sim = 0.0
+            try:
+                sim = w2v_model.similarity(vocab[i], vocab[j])
+            except KeyError:
+                num_unknown_words += 1
+            cos_sims.append(sim)
             
         # Optimize alpha for maximize mutual information
         if is_alpha_dynamic:
