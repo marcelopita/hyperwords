@@ -95,25 +95,33 @@ def optimize_alpha(H_Y, bow_docs, vocab, cos_sims, dataset_classes):
 def main(argv = None):
     if argv is None:
         argv = sys.argv
+        
+    # Parameters
+    wv_filename = argv[1]
+    hyperwords_filename = argv[2]
+    vocab_filename = argv[3]
+    alpha = float(argv[4])
+    ds_filename = None
+    if alpha == -1.0:
+        ds_filename = argv[5]
     
     # Load word vectors    
-    w2v_model = KeyedVectors.load_word2vec_format(argv[1], binary=argv[1].endswith(".bin"))
-    
-    # Hyperwords file name
-    hyperwords_filename = argv[2]
+    w2v_model = KeyedVectors.load_word2vec_format(wv_filename, binary=argv[1].endswith(".bin"))
+
+    # Load dataset vocabulary
+    vocab_f = open(vocab_filename, 'r')
+    vocab = vocab_f.readlines() 
+    vocab_f.close()
+    vocab = sorted([w.strip() for w in vocab])
+    vocab_size = len(vocab)
     
     # Assume dynamic alpha when -1.0
-    alpha = float(argv[3])
     is_alpha_dynamic = False
     dataset = None
     if alpha == -1.0:
         is_alpha_dynamic = True
         # In this case, we need the dataset with classes
-        dataset = load_dataset(argv[4])
-
-    # Vocabulary
-    vocab = sorted(list(w2v_model.vocab))
-    vocab_size = len(vocab)
+        dataset = load_dataset(ds_filename)
     
     # Hyperwords
     hyperwords = pd.DataFrame(index=vocab, columns=vocab)
