@@ -105,15 +105,19 @@ def main(argv = None):
     if alpha == -1.0:
         ds_filename = argv[5]
     
-    # Load word vectors    
+    # Load word vectors
+    print("Loading word vectors... ", end='', flush=True)
     w2v_model = KeyedVectors.load_word2vec_format(wv_filename, binary=argv[1].endswith(".bin"))
+    print("OK!")
 
     # Load dataset vocabulary
+    print("Loading vocabulary... ", end='', flush=True)
     vocab_f = open(vocab_filename, 'r')
     vocab = vocab_f.readlines() 
     vocab_f.close()
     vocab = sorted([w.strip() for w in vocab])
     vocab_size = len(vocab)
+    print("OK!")
     
     # Assume dynamic alpha when -1.0
     is_alpha_dynamic = False
@@ -121,11 +125,15 @@ def main(argv = None):
     if alpha == -1.0:
         is_alpha_dynamic = True
         # In this case, we need the dataset with classes
+        print("Loading dataset... ", end='', flush=True)
         dataset = load_dataset(ds_filename)
+        print("OK!")
     
     # Hyperwords
+    print("Initializing hyperwords... ", end='', flush=True)
     hyperwords = pd.DataFrame(index=vocab, columns=vocab)
     hyperwords = hyperwords.fillna(0.0)
+    print("OK!")
     
     # Number of unknown words
     num_unknown_words = 0
@@ -134,6 +142,7 @@ def main(argv = None):
     H_Y = None
     bow_docs = None
     if is_alpha_dynamic:
+        print("Calculating priors and BOW... ", end='', flush=True)
         num_docs = dataset.shape[0]
         H_Y = 0.0
         dataset_classes = dataset.loc[:, "class"] 
@@ -142,8 +151,10 @@ def main(argv = None):
             H_Y += p_y * np.log(p_y)
         H_Y = -H_Y
         bow_docs = calculate_tf(dataset.loc[:,"text"], vocab, True)
+        print("OK!")
 
-    # Iterate over vocabulary    
+    # Iterate over vocabulary
+    print("Generation of hyperwords:", flush=True)    
     printProgressBar(0, vocab_size, prefix = 'Progress:', suffix = 'Complete')
     for i in range(vocab_size):
         
@@ -170,7 +181,9 @@ def main(argv = None):
         printProgressBar(i+1, vocab_size, prefix = 'Progress:', suffix = 'Complete')
     
     # Save hyperwords to disk
+    print("Saving hyperwords to disk... ", end='', flush=True)
     hyperwords.to_csv(hyperwords_filename)
+    print("OK!")
         
 if __name__ == '__main__':
     main()
