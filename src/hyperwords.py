@@ -150,7 +150,7 @@ def main(argv = None):
             p_y = float(len([c for c in dataset_classes if c==y])) / float(num_docs)
             H_Y += p_y * np.log(p_y)
         H_Y = -H_Y
-        bow_docs = calculate_tf(dataset.loc[:,"text"], vocab, True)
+        bow_docs = calculate_tf(dataset.loc[:,"text"].valuses.astype('U'), vocab, True)
         print("OK!")
 
     # Iterate over vocabulary
