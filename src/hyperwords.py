@@ -77,9 +77,9 @@ def mutual_information(H_Y, bow_docs, vocab, cos_sims, dataset_classes, alpha):
 def negative_mutual_information(H_Y, bow_docs, vocab, cos_sims, dataset_classes, alpha):
     return -mutual_information(H_Y, bow_docs, vocab, cos_sims, dataset_classes, alpha)
 
-def optimize_alpha_exact(H_Y, bow_docs, vocab, cos_sims, dataset_classes):
+def optimize_alpha_exact(H_Y, bow_docs, vocab, cos_sims, dataset_classes, num_threads):
     alphas = sorted(set([round(x,1) for x in cos_sims]))
-    pool = Pool()
+    pool = Pool(num_threads)
     func = partial(mutual_information, H_Y, bow_docs, vocab, cos_sims, dataset_classes)
     mutual_information_values = pool.map(func, alphas)
     pool.close()
@@ -102,8 +102,10 @@ def main(argv = None):
     vocab_filename = argv[3]
     alpha = float(argv[4])
     ds_filename = None
+    num_threads = 0
     if alpha == -1.0:
         ds_filename = argv[5]
+        num_threads = argv[6]
     
     # Load word vectors
     print("Loading word vectors... ", end='', flush=True)
@@ -170,7 +172,7 @@ def main(argv = None):
             
         # Optimize alpha for maximize mutual information
         if is_alpha_dynamic:
-            alpha = optimize_alpha_exact(H_Y, bow_docs, vocab, cos_sims, dataset["class"])
+            alpha = optimize_alpha_exact(H_Y, bow_docs, vocab, cos_sims, dataset["class"], num_threads)
         
         # Filter by alpha    
         for j in range(vocab_size):
