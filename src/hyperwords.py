@@ -105,7 +105,7 @@ def main(argv = None):
     num_threads = 0
     if alpha == -1.0:
         ds_filename = argv[5]
-        num_threads = argv[6]
+        num_threads = int(argv[6])
     
     # Load word vectors
     print("Loading word vectors... ", end='', flush=True)
