@@ -25,15 +25,16 @@ def main(argv = None):
     print("OK!")
     
     print("Extracting word vectors... ", end='', flush=True)
-    out_wv = pd.DataFrame(index=vocab, columns=range(w2v_model.wv.vector_size))
+    target_vocab = sorted([x for x in vocab if x in w2v_model.vocab])
+    out_wv = pd.DataFrame(index=target_vocab, columns=range(w2v_model.wv.vector_size))
     out_wv = out_wv.fillna(0.0)
-    drop_words = []
-    for w in vocab:
-        try:
-            out_wv.loc[w] = w2v_model[w]
-        except KeyError:
-            drop_words.append(w)
-    out_wv.drop(drop_words)
+#     drop_words = []
+    for w in target_vocab:
+#         try:
+        out_wv.loc[w] = w2v_model[w]
+#         except KeyError:
+#             drop_words.append(w)
+#     out_wv.drop(drop_words)
     print("OK!")
     
     print("Saving extracted vectors to disk... ", end='', flush=True)
