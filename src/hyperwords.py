@@ -137,9 +137,6 @@ def main(argv = None):
     hyperwords = hyperwords.fillna(0.0)
     print("OK!")
     
-    # Number of unknown words
-    num_unknown_words = 0
-    
     # Calculation of prior H_Y and BOW, when alpha is dynamic
     H_Y = None
     bow_docs = None
@@ -163,11 +160,14 @@ def main(argv = None):
         # Calculate similarities with other word vectors
         cos_sims = []
         for j in range(vocab_size):
+            if j == i:
+                cos_sims.append(1.0)
+                continue
             sim = 0.0
             try:
                 sim = w2v_model.similarity(vocab[i], vocab[j])
             except KeyError:
-                num_unknown_words += 1
+                pass
             cos_sims.append(sim)
             
         # Optimize alpha for maximize mutual information
