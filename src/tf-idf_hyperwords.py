@@ -86,9 +86,9 @@ def main(argv = None):
 #    tfidf_hyperwords_filename = argv[4]
 
     dataset_filename = 'datasets/20nshort.txt'
-    hyperwords_filename = 'hyperwords_20nshort_sg-1000_alpha-0.4_beta-0.3.csv'
-    vocab_map_filename = 'vocab-map_20nshort_sg-1000_alpha-0.4_beta-0.3.pkl'
-    tfidf_hyperwords_filename = 'tfidf-hyperwords_20nshort_sg-1000_alpha-0.4_beta-0.3.csv'
+    hyperwords_filename = 'merged_hyperwords/hyperwords_20nshort_sg-1000_dynamic-alpha_beta-0.3.csv'
+    vocab_map_filename = 'merged_hyperwords/vocab-map_20nshort_sg-1000_dynamic-alpha_beta-0.3.pkl'
+    tfidf_hyperwords_filename = 'bag_of_hyperwords/tfidf-hyperwords_20nshort_sg-1000_dynamic-alpha_beta-0.3.csv'
 
     print("Loading hyperwords")
     H = pd.read_csv(hyperwords_filename, sep=',', header=0, index_col=0)
