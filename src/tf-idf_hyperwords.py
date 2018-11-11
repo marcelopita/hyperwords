@@ -80,15 +80,15 @@ def main(argv = None):
     if argv is None:
         argv = sys.argv
 
-#    dataset_filename = argv[1]
-#    hyperwords_filename = argv[2]
-#    vocab_map_filename = argv[3]
-#    tfidf_hyperwords_filename = argv[4]
+    dataset_filename = argv[1]
+    hyperwords_filename = argv[2]
+    vocab_map_filename = argv[3]
+    tfidf_hyperwords_filename = argv[4]
 
-    dataset_filename = 'datasets/20nshort.txt'
-    hyperwords_filename = 'merged_hyperwords/hyperwords_20nshort_sg-1000_dynamic-alpha_beta-0.3.csv'
-    vocab_map_filename = 'merged_hyperwords/vocab-map_20nshort_sg-1000_dynamic-alpha_beta-0.3.pkl'
-    tfidf_hyperwords_filename = 'bag_of_hyperwords/tfidf-hyperwords_20nshort_sg-1000_dynamic-alpha_beta-0.3.csv'
+#     dataset_filename = 'datasets/20nshort.txt'
+#     hyperwords_filename = 'merged_hyperwords/hyperwords_20nshort_sg-1000_dynamic-alpha_beta-0.3.csv'
+#     vocab_map_filename = 'merged_hyperwords/vocab-map_20nshort_sg-1000_dynamic-alpha_beta-0.3.pkl'
+#     tfidf_hyperwords_filename = 'bag_of_hyperwords/tfidf-hyperwords_20nshort_sg-1000_dynamic-alpha_beta-0.3.csv'
 
     print("Loading hyperwords")
     H = pd.read_csv(hyperwords_filename, sep=',', header=0, index_col=0)
