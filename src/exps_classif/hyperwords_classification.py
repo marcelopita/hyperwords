@@ -34,7 +34,7 @@ def main(argv = None):
     classif = linear_model.LogisticRegression(max_iter=1000000)
     cv = StratifiedKFold(n_splits=num_folds, shuffle=shuffle_opt)
     scores = pd.DataFrame(  pd.Series(cross_val_score(classif, data,
-                                                      np.ravel(targets),
+                                                      targets,
                                                       cv=cv, scoring='f1_macro')),
                             columns=["scores"])
     scores.index.name = "fold"
