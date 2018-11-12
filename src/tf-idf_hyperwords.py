@@ -7,7 +7,6 @@ import pandas as pd
 import pickle
 from sklearn.feature_extraction.text import CountVectorizer
 import math
-from test.sortperf import flush
 
 
 def printProgressBar (iteration, total, prefix = '', suffix = '',
