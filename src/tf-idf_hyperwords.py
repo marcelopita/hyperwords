@@ -7,6 +7,7 @@ import pandas as pd
 import pickle
 from sklearn.feature_extraction.text import CountVectorizer
 import math
+from test.sortperf import flush
 
 
 def printProgressBar (iteration, total, prefix = '', suffix = '',
@@ -47,33 +48,39 @@ def calculate_tf(corpus, vocab, binary=False):
     return pd.DataFrame(tf_docs.todense(), columns=sorted(vocab)).sort_index()
 
 
-def calculate_idf_hyperwords(corpus, H, vocab):
-    idf = []
-    num_docs = len(corpus)
-    vocab_size = len(vocab)
-    printProgressBar(0, vocab_size, prefix = "Generating IDF hyperwords", suffix = 'Complete')
-    i = 0
-    for idx,row in H.iterrows():
-        sum_mu = 0.0
-        for d in corpus:
-            d_words = set(d.split())
-            d_bow = []
-            for w in vocab:
-                if w in d_words:
-                    d_bow.append(1.0)
-                else:
-                    d_bow.append(0.0)
-            d_bow = pd.Series(d_bow, index=vocab)
-            vdh = d_bow.multiply(row, axis=0)
-            num_words = float(vdh.gt(0.0).sum(axis=0))
-            mu_hd = 0.0
-            if num_words != 0.0:
-                mu_hd = float(vdh.sum(axis=0) / num_words)
-            sum_mu += mu_hd
-        idf.append(math.log(float(num_docs) / sum_mu))
-        i += 1
-        printProgressBar(i, vocab_size, prefix = "Generating IDF hyperwords", suffix = 'Complete')
-    return pd.DataFrame(pd.Series(idf, index=vocab)).sort_index()
+def calculate_idf_hyperwords(bow, num_docs, H):
+    # All |V_d_ht| => matrix of size |V|xN
+    vlens = H.astype(bool).astype(int).dot(bow.T)
+    w_sums = bow.dot(H.T)
+    mus = w_sums / vlens.T
+    idfs = np.log((float(num_docs) / mus.sum(axis=0)).fillna(0.0).replace(np.inf,0))
+    return pd.DataFrame(pd.Series(idfs, index=H.index)).sort_index()
+#     idf = []
+#     num_docs = len(corpus)
+#     vocab_size = len(vocab)
+#     printProgressBar(0, vocab_size, prefix = "Generating IDF hyperwords", suffix = 'Complete')
+#     i = 0
+#     for idx,row in H.iterrows():
+#         sum_mu = 0.0
+#         for d in corpus:
+#             d_words = set(d.split())
+#             d_bow = []
+#             for w in vocab:
+#                 if w in d_words:
+#                     d_bow.append(1.0)
+#                 else:
+#                     d_bow.append(0.0)
+#             d_bow = pd.Series(d_bow, index=vocab)
+#             vdh = d_bow.multiply(row, axis=0)
+#             num_words = float(vdh.gt(0.0).sum(axis=0))
+#             mu_hd = 0.0
+#             if num_words != 0.0:
+#                 mu_hd = float(vdh.sum(axis=0) / num_words)
+#             sum_mu += mu_hd
+#         idf.append(math.log(float(num_docs) / sum_mu))
+#         i += 1
+#         printProgressBar(i, vocab_size, prefix = "Generating IDF hyperwords", suffix = 'Complete')
+#     return pd.DataFrame(pd.Series(idf, index=vocab)).sort_index()
 
 
 def main(argv = None):
@@ -90,25 +97,34 @@ def main(argv = None):
 #     vocab_map_filename = 'merged_hyperwords/vocab-map_20nshort_sg-1000_dynamic-alpha_beta-0.3.pkl'
 #     tfidf_hyperwords_filename = 'bag_of_hyperwords/tfidf-hyperwords_20nshort_sg-1000_dynamic-alpha_beta-0.3.csv'
 
-    print("Loading hyperwords")
+    print("Loading hyperwords... ", end="", flush=True)
     H = pd.read_csv(hyperwords_filename, sep=',', header=0, index_col=0)
+    print("OK!")
+    print("Loading vocabulary... ", end="", flush=True)
     vocab_map = pickle.load(open(vocab_map_filename, "rb"))
+    print("OK!")
+    print("Rebuilding all hyperwords... ", end="", flush=True)
     H = rebuild_all_hyperwords(H, vocab_map)
-    print("Loading corpus")
+    print("OK!")
+    print("Loading corpus... ", end="", flush=True)
     corpus = open(dataset_filename, "r").read().splitlines()
-    print("Generating TF")
+    print("OK!")
+    print("Calculating TF... ", end="", flush=True)
     vocab = sorted(vocab_map.keys())
     tf_docs = calculate_tf(corpus, vocab)
-    print("Generating TF hyperwords")
+    print("OK!")
+    print("Generating TF hyperwords... ", end="", flush=True)
     tf_hw = tf_docs.dot(H.transpose())
-    bow_docs = calculate_tf(corpus, vocab, True)
-    idf_hw = calculate_idf_hyperwords(corpus, H, vocab)
-    print("Generating TF-IDF hyperwords")
+    print("OK!")
+    print("Generating IDF hyperwords... ", end="", flush=True)
+    idf_hw = calculate_idf_hyperwords(tf_docs.astype(bool).astype(int), corpus, H, vocab)
+    print("OK!")
+    print("Generating TF-IDF hyperwords... ", end="", flush=True)
     tfidf_hw = tf_hw.multiply(idf_hw.iloc[:,0], axis=1)
-    print(tfidf_hw.shape)
-    print("Saving TF-IDF hyperwords")
+    print("OK!")
+    print("Saving TF-IDF hyperwords... ", end="", flush=True)
     tfidf_hw.to_csv(tfidf_hyperwords_filename)
-    
+    print("OK!")    
 
 
 if __name__ == '__main__':
