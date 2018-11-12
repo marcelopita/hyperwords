@@ -116,7 +116,7 @@ def main(argv = None):
     tf_hw = tf_docs.dot(H.transpose())
     print("OK!")
     print("Generating IDF hyperwords... ", end="", flush=True)
-    idf_hw = calculate_idf_hyperwords(tf_docs.astype(bool).astype(int), corpus, H, vocab)
+    idf_hw = calculate_idf_hyperwords(tf_docs.astype(bool).astype(int), len(corpus), H)
     print("OK!")
     print("Generating TF-IDF hyperwords... ", end="", flush=True)
     tfidf_hw = tf_hw.multiply(idf_hw.iloc[:,0], axis=1)
