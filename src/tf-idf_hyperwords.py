@@ -50,13 +50,13 @@ def calculate_tf(corpus, vocab, binary=False):
 def calculate_idf_hyperwords(bow, num_docs, H):
     # All |V_d_ht| => matrix of size |V|xN
     vlens = H.astype(bool).astype(int).dot(bow.T)
-    print("*", end="")
+    print("*", end="", flush=True)
     w_sums = bow.dot(H.T)
-    print("*", end="")
+    print("*", end="", flush=True)
     mus = w_sums / vlens.T
-    print("*", end="")
+    print("*", end="", flush=True)
     idfs = np.log((float(num_docs) / mus.sum(axis=0)).fillna(0.0).replace(np.inf,0))
-    print("*", end="")
+    print("*", end="", flush=True)
     return pd.DataFrame(pd.Series(idfs, index=H.index)).sort_index()
 #     idf = []
 #     num_docs = len(corpus)
