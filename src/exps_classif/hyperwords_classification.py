@@ -19,6 +19,7 @@ def main(argv = None):
     num_folds = int(argv[3])
     shuffle_opt = bool(argv[4])
     scores_filename = argv[5]
+    metric = argv[6]    # f1_macro
     
     print("Reading targets... ", end="", flush=True)
     targets = np.ravel(pd.read_csv(dataset_filename, sep=';', header=None,
@@ -35,7 +36,7 @@ def main(argv = None):
     cv = StratifiedKFold(n_splits=num_folds, shuffle=shuffle_opt)
     scores = pd.DataFrame(  pd.Series(cross_val_score(classif, data,
                                                       targets,
-                                                      cv=cv, scoring='f1_macro')),
+                                                      cv=cv, scoring=metric)),
                             columns=["scores"])
     scores.index.name = "fold"
     print("OK!")
