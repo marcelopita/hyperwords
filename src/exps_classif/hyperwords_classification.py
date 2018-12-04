@@ -42,7 +42,7 @@ def main(argv = None):
     print("OK!")
     
     print("Saving scores... ", end="", flush=True)
-    scores.to_csv(scores_filename, sep=',', float_format="%.2f")
+    scores.to_csv(scores_filename, sep=',', float_format="%.4f")
     print("OK", flush=True)
 
 
