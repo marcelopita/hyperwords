@@ -90,7 +90,7 @@ def main(argv = None):
     scores.to_csv(scores_filename, sep=',', float_format="%.6f")
     print("OK", flush=True)
 
-    print(scores)
+    print(scores['scores'])
 
 
 if __name__ == '__main__':
