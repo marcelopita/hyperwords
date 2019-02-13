@@ -35,7 +35,7 @@ def get_best_svm_params(X, Y):
         classif_model = RandomizedSearchCV(SVC(kernel='rbf'),
                                       param_distributions=params,
                                       n_iter = 20, n_jobs = -1, cv = 3,
-                                      scoring = 'f1_macro', iid=False, error_score=0.0)
+                                      scoring = 'accuracy', iid=False, error_score=0.0)
     classif_model.fit(X, Y)
     return classif_model.best_params_
 
@@ -51,11 +51,13 @@ def main(argv = None):
     scores_filename = argv[5]
     classif_type = argv[6]
     metric = argv[7]    # f1_macro
+    #metric = {'F1-score (macro)':'f1_macro', 'F1-score (micro)':'f1_micro', 'Accuracy':'accuracy'}
     
     print("Reading classes... ", end="", flush=True)
     Y = np.ravel(pd.read_csv(dataset_filename, sep=';', header=None,
                                    names=["id", "class", "text"],
                                    index_col=0)["class"].values)
+    print("OK!")
     
     print("Reading data... ", end="", flush=True)
     X = pd.read_csv(bohw_filename, sep=',', header=0, index_col=0).values
@@ -66,7 +68,7 @@ def main(argv = None):
     if classif_type == "knn":
         classif = KNeighborsClassifier(1)
     elif classif_type == "nb":
-        classif = GaussianNB(var_smoothing=1e-9)
+        classif = GaussianNB()
     elif classif_type == "lr":
         classif = LogisticRegression(max_iter=100000000)
     elif classif_type == "rf":
@@ -79,7 +81,7 @@ def main(argv = None):
         classif = SVC(kernel='rbf', C = best_params['C'], gamma = best_params['gamma'],
                       decision_function_shape="ovr")
     cv = StratifiedKFold(n_splits=num_folds, shuffle=shuffle_opt)
-    scores = pd.DataFrame(  pd.Series(cross_val_score(classif, X, Y, cv=cv, scoring=metric)),
+    scores = pd.DataFrame(  pd.Series(cross_val_score(classif, X, Y, cv=cv, scoring=metric, verbose=1, n_jobs=-1)),
                             columns=["scores"])
     scores.index.name = "fold"
     print("OK!")
@@ -87,6 +89,8 @@ def main(argv = None):
     print("Saving scores... ", end="", flush=True)
     scores.to_csv(scores_filename, sep=',', float_format="%.6f")
     print("OK", flush=True)
+
+    print(scores)
 
 
 if __name__ == '__main__':
