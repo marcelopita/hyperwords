@@ -52,6 +52,7 @@ def main(argv = None):
     classif_type = argv[6]
     metric = argv[7]    # f1_macro
     #metric = {'F1-score (macro)':'f1_macro', 'F1-score (micro)':'f1_micro', 'Accuracy':'accuracy'}
+    multiclass = argv[8]
     
     print("Reading classes... ", end="", flush=True)
     Y = np.ravel(pd.read_csv(dataset_filename, sep=';', header=None,
@@ -70,7 +71,14 @@ def main(argv = None):
     elif classif_type == "nb":
         classif = GaussianNB()
     elif classif_type == "lr":
-        classif = LogisticRegression(max_iter=100000000)
+        selected_solver = 'liblinear'
+        selected_mc = 'ovr'
+        selected_njobs = -1
+        if multiclass:
+            selected_solver = 'lbfgs'
+            selected_mc = 'multinomial'
+        classif = LogisticRegression(max_iter=100000000, C=90, solver=selected_solver,
+                                     multi_class=selected_mc, n_jobs=selected_njobs)
     elif classif_type == "rf":
         classif = RandomForestClassifier(n_estimators=100, max_depth=120)
     elif classif_type == "mlp":
